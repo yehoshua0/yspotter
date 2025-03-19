@@ -1,5 +1,40 @@
 # YSpotter | React + Vite
 
+
+## Project structure at High Level
+src/
+
+│── assets/              # Static assets like images, icons, fonts
+
+│── components/          # Reusable UI components (buttons, cards, tables, etc.)
+
+│── context/             # Context providers for global state management
+
+│── hooks/               # Custom React hooks
+
+│── layouts/             # Dashboard layouts & wrappers
+
+│── services/            # API calls, data fetching, authentication services
+
+│── store/               # Global state management (Redux, Zustand, etc.)
+
+│── styles/              # Global styles, theme configurations
+
+│── utils/               # Helper functions & utilities
+
+│── views/               # Feature-specific components (Dashboard, Reports, etc.)
+
+│── App.jsx              # Main app component (if using CRA/Vite)
+
+│── main.jsx             # Entry point (ReactDOM.render in CRA/Vite)
+
+│── routes.jsx           # Route definitions (React Router)
+
+└── index.tsx            # Application bootstrap file
+
+
+## About technologies
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
