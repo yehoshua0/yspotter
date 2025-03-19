@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w1fjty+7@1^jxaj@t5g1^t6kh5u57*xpq$*4kxo0&6^1@8l_cu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'yspotter.onrender.com']
+ALLOWED_HOSTS = ['localhost', 'yspotter.onrender.com']
 
 # Application definition
 

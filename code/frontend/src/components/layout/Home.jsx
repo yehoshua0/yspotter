@@ -49,7 +49,7 @@ function Home() {
     if (!mapElement) return
 
     const map = tt.map({
-      key: 'q6fthpCnDYdu2pVwhEKA24mhVyKcRvVe', // Your TomTom API Key
+      key: `${import.meta.env.VITE_TOMTOM_API_KEY}`, // Your TomTom API Key
       container: 'map',
       center: [-74.006, 40.7128], // New York coordinates
       zoom: 10,
