@@ -8,7 +8,7 @@ function App() {
 
   // Fetch data from Django API when the component mounts
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_URL}/items/`) // Proxy handles the backend URL in development
+    axios.get(`${import.meta.env.VITE_API_URL}/items/`) // Proxy handles the backend URL in development
       .then(response => {
         setItems(response.data);
         setLoading(false);
