@@ -1,2 +1,2 @@
-.env
+.env.development
 db.sqlite3

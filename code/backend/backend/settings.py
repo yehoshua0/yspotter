@@ -100,19 +100,35 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 import dj_database_url
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',  # Use the PostGIS backend
-        'NAME': 'yspotter',
-        'USER': 'postgres',
-        'PASSWORD': 'user',
-        'HOST': 'localhost',  # Or your database host
-        'PORT': '5432',       # Default PostgreSQL port
+# Get the environment mode
+ENV_MODE = os.getenv("DJANGO_ENV", "development")  # Default to "development"
+
+if ENV_MODE == "production":
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.getenv("postgresql://spotter:C4wvuZxIADxzTUbnOXKsWbLivVPs1Ds1@dpg-cve79u5umphs73bok4jg-a/yspotter"),
+            conn_max_age=600,
+            ssl_require=True  # Ensure secure connections
+        )
     }
-}
+else:  # Development (PostGres)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',  # Use the PostGIS backend
+            'NAME': 'yspotter',
+            'USER': 'postgres',
+            'PASSWORD': 'user',
+            'HOST': 'localhost',  # Or your database host
+            'PORT': '5432',       # Default PostgreSQL port
+        }
+    }
+
+
 
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'  # Only if using SpatiaLite
 
+if not DEBUG:
+    pass
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

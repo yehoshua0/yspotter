@@ -27,6 +27,7 @@ const sampleItems = [
 ]
 
 function Home() {
+  const [trip, setTrip] = useState({}) // Default to trip
   const [users, setUsers] = useState(sampleItems) // Default to sample items
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('ALL') // Tab state
@@ -62,6 +63,11 @@ function Home() {
   }, [])
 
   const handleTabChange = (tab) => setActiveTab(tab)
+
+  const handleSeeDirection = () => {
+    console.log('See Direction for:', trip)
+    setTrip(trip)
+  }
 
   return (
     <div id="home" className="w-full h-screen flex flex-col bg-gray-100">
@@ -210,7 +216,11 @@ function Home() {
           )}
 
           {/* Direction button */}
-          <button className="bg-orange-600 w-full p-4 my-8 text-white text-center rounded-xl shadow-orange-600/60 shadow-lg cursor-pointer">
+          <button
+            type="submit"
+            onClick={handleSeeDirection}
+            className="bg-orange-600 w-full p-4 my-8 text-white text-center rounded-xl shadow-orange-600/60 shadow-lg cursor-pointer"
+          >
             See Direction <i className="bi bi-arrow-right mx-3"></i>
           </button>
         </section>
