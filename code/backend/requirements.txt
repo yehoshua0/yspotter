@@ -14,5 +14,5 @@ djangorestframework-simplejwt
 PyJWT
 pytz
 python-dotenv
-gdal
+gdal==3.10.2
 psycopg2
