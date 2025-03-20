@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +30,23 @@ SECRET_KEY = 'django-insecure-w1fjty+7@1^jxaj@t5g1^t6kh5u57*xpq$*4kxo0&6^1@8l_cu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'yspotter.onrender.com']
+ALLOWED_HOSTS = ['*']
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
 
 # Application definition
 
@@ -39,6 +60,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'corsheaders',
+    'django.contrib.gis',
 ]
 
 MIDDLEWARE = [
@@ -79,8 +101,17 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 import dj_database_url
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',  # Use the PostGIS backend
+        'NAME': 'yspotter',
+        'USER': 'postgres',
+        'PASSWORD': 'user',
+        'HOST': 'localhost',  # Or your database host
+        'PORT': '5432',       # Default PostgreSQL port
+    }
 }
+
+SPATIALITE_LIBRARY_PATH = 'mod_spatialite'  # Only if using SpatiaLite
 
 
 # Password validation
@@ -118,6 +149,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+import os
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  # Folder where static files are stored
+
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -126,7 +160,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "https://yspotter.vercel.app",
-]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWS_CREDENTIALS = True
+
+GDAL_LIBRARY_PATH = os.path.join(os.environ["CONDA_PREFIX"], "Library", "bin", "gdal.dll")  # Adjust the version!

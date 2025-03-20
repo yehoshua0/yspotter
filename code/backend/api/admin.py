@@ -1,4 +1,5 @@
 from django.contrib import admin
-from .models import Item
+from .models import Trip, Route
 
-admin.site.register(Item)
+admin.site.register(Trip)
+admin.site.register(Route)

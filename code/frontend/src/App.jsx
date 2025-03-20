@@ -1,21 +1,36 @@
-import { Routes, Route, Link } from 'react-router-dom'
-import Home from './components/layout/Home'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Login from './components/pages/Login'
+import Register from './components/pages/Register'
+import Home from './components/pages/Home'
+import NotFound from './components/pages/NotFound'
+import ProtectedRoute from './components/common/ProtectedRoute'
+
+function Logout() {
+  localStorage.clear()
+  return <Navigate to="/login" />
+}
+
+function RegisterAndLogout() {
+  localStorage.clear()
+  return <Register />
+}
 
 function App() {
   return (
-    <div>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path="*"
-          element={
-            <div className="grid place-items-center">
-              <h1>404 - Not Found</h1>
-            </div>
-          }
-        />
-      </Routes>
-    </div>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/logout" element={<Logout />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<RegisterAndLogout />} />
+      <Route path="*" element={<NotFound />}></Route>
+    </Routes>
   )
 }
 

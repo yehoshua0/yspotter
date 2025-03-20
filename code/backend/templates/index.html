@@ -1,8 +1,258 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
-<head><title>My App</title></head>
-<body>
-    <h1>Welcome to the Django Backend</h1>
-    <p>This is the updated root page!</p>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YSpotter API Documentation</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    {% comment %} Google fonts {% endcomment %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+  </head>
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg">
+      <div class="container-fluid">
+        <div class="d-flex align-items-center">
+          <span class="navbar-text text-white">YSpotter API Docs</span>
+        </div>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item">
+              <a class="nav-link active bg-secondary rounded" href="#">Docs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Endpoints</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Status</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            {% comment %} <li class="nav-item" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="Signup">
+              <a class="nav-link" href="#"
+                ><i class="bi bi-person-add"></i> Create account</a
+              >
+            </li> {% endcomment %}
+            <li class="nav-item" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="Login">
+              <a class="nav-link" href="#"
+                ><i class="bi bi-box-arrow-in-right"></i> Login</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+        
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3">
+                  <label for="recipient-name" class="col-form-label">Username:</label>
+                  <input type="text" class="form-control" id="recipient-name">
+                </div>
+                <div class="mb-3">
+                  <label for="password-text" class="col-form-label">Password:</label>
+                  <input class="form-control" type="text" id="password-text" />
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary action"></button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="d-flex flex-grow-1 overflow-hidden">
+      <!-- Sidebar -->
+      <aside
+        class="w-16 p-4 bg-white d-flex flex-column align-items-center justify-content-between border-end"
+      >
+        {% for idx in "1" %}
+        <a class="my-3" href="#">Overview</a>
+        {% endfor %}
+      </aside>
+
+      <!-- API Documentation -->
+      <section class="flex-grow-1 p-5 overflow-y-auto">
+        <header class="mb-5">
+          <h1 class="display-4 fw-bold text-dark">
+            YSpotter API Documentation
+          </h1>
+          <p class="text-muted mt-2">
+            Explore the YSpotter API endpoints and integrate with your
+            applications.
+          </p>
+          <div class="mt-3">
+            <span class="fw-semibold">API Status:</span>
+            <span
+              class="badge {% if api_status == 'Online' %}bg-success{% else %}bg-danger{% endif %} ms-2"
+            >
+              {{ api_status }}
+            </span>
+          </div>
+        </header>
+
+        <!-- Overview -->
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <h2 class="card-title h4 fw-semibold">Overview</h2>
+            <p class="card-text">
+              Base URL:
+              <code>{{ request.scheme }}://{{ request.get_host }}/api/</code>
+            </p>
+            <p class="card-text">
+              The YSpotter API provides access to trips and routes created and user data.
+              Authentication is required for some endpoints (API key support
+              coming soon).
+            </p>
+          </div>
+        </div>
+
+        <!-- Endpoints -->
+        <div class="accordion" id="endpointsAccordion">
+          <!-- GET /api/users/ -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseItems"
+                aria-expanded="false"
+                aria-controls="collapseItems"
+              >
+                GET /api/users/
+              </button>
+            </h2>
+            <div
+              id="collapseItems"
+              class="accordion-collapse collapse show"
+              data-bs-parent="#endpointsAccordion"
+            >
+              <div class="accordion-body">
+                <p>Retrieve a list of all existing users.</p>
+                <div class="bg-light p-3 rounded">
+                  <code class="text-success">GET</code>
+                  {{ request.scheme }}://{{ request.get_host }}/api/users/
+                </div>
+                <h5 class="mt-3">Response</h5>
+<pre class="bg-light p-3 rounded">
+    [
+        {
+            "id": 1,
+            "username": "spotter",
+            "image": "url/to/image"
+        },
+        {
+            "id": 2,
+            "name": "yspotter",
+            "image": "url/to/image2"
+        },
+        {% for user in users %}
+        {
+            "id": {{ uer.id }},
+            "name": "{{ user.name }}",
+            "image": "{{ user.image|default:'url/to/image' }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- GET /api/users/:id/ -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseItemDetail"
+                aria-expanded="false"
+                aria-controls="collapseItemDetail"
+              >
+                GET /api/users/:id/
+              </button>
+            </h2>
+            <div
+              id="collapseItemDetail"
+              class="accordion-collapse collapse"
+              data-bs-parent="#endpointsAccordion"
+            >
+              <div class="accordion-body">
+                <p>Retrieve details of a specific user by ID.</p>
+                <div class="bg-light p-3 rounded">
+                  <code class="text-success">GET</code>
+                  {{ request.scheme }}://{{ request.get_host }}/api/user/1/
+                </div>
+                <h5 class="mt-3">Response</h5>
+                <pre class="bg-light p-3 rounded">
+{
+    "id": 1,
+    "name": "spotter",
+    "image": "url/to/image"
+}</pre
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="text-center mt-5">
+          <a class="btn btn-primary btn-lg shadow" href="#">
+            Explore All Endpoints <i class="bi bi-arrow-right ms-2"></i>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="{% static "js/scripts.js" %}"></script>
+  </body>
 </html>

@@ -27,20 +27,20 @@ const sampleItems = [
 ]
 
 function Home() {
-  const [items, setItems] = useState(sampleItems) // Default to sample items
+  const [users, setUsers] = useState(sampleItems) // Default to sample items
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('ALL') // Tab state
 
   useEffect(() => {
-    // Fetch items from Django API
+    // Fetch users from Django API
     axios
-      .get(`${import.meta.env.VITE_API_URL}/items/`)
+      .get(`${import.meta.env.VITE_API_URL}api/users/`)
       .then((response) => {
-        setItems(response.data)
+        setUsers(response.data)
         setLoading(false)
       })
       .catch((error) => {
-        console.error('Error fetching items:', error)
+        console.error('Error fetching users:', error)
         setLoading(false)
       })
 
@@ -194,15 +194,15 @@ function Home() {
             <p className="text-center text-gray-500">Loading items...</p>
           ) : (
             <ul className="grid grid-cols-3 gap-4">
-              {items.map((item) => (
-                <li key={item.id}>
-                  <Link to={`/items/${item.id}`}>
+              {users.map((user) => (
+                <li key={user.id}>
+                  <Link to={`/users/${user.id}`}>
                     <img
-                      src={item.img}
-                      alt={item.name}
+                      src={user.img}
+                      alt={user.name}
                       className="w-full h-24 object-cover rounded-lg hover:scale-105 transition-transform"
                     />
-                    <p className="text-center text-sm mt-1">{item.name}</p>
+                    <p className="text-center text-sm mt-1">{user.name}</p>
                   </Link>
                 </li>
               ))}

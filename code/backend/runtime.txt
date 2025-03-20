@@ -1,1 +1,14 @@
 python-3.11Python 3.12.7
+
+GDAL 3.6.2, released 2023/01/02
+C:\Users\ATD\anaconda3\Library\bin\gdal362.dll
+
+DB_NAME: yspotter
+HOST: localhost
+PORT: 5432
+USERNAME: postgres
+PASSWORD: user
+
+ADMIN: yspotter
+EMAIL: spotter@spotter.com
+PASSWORD: ai.spotter

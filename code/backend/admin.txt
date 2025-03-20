@@ -1,0 +1,3 @@
+Username: spotter
+Email address: spotter@spotter.com
+Password: ai.spotter
