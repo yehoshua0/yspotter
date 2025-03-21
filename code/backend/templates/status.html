@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>YSpotter API Documentation</title>
+    <title>Status - YSpotter API Documentation</title>
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -48,13 +48,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav mx-auto">
             <li class="nav-item">
-              <a class="nav-link active bg-secondary rounded" href="/">Docs</a>
+              <a class="nav-link" href="/">Docs</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/endpoints">Endpoints</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/status">Status</a>
+              <a class="nav-link active bg-secondary rounded" href="/status">Status</a>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
@@ -122,7 +122,7 @@
             applications.
           </p>
           <div class="mt-3">
-            <span class="fw-semibold">API Status:</span>
+            <span class="fw-semibold">Global API Status:</span>
             <span
               class="badge {% if api_status == 'Online' %}bg-success{% else %}bg-danger{% endif %} ms-2"
             >
@@ -134,118 +134,41 @@
         <!-- Overview -->
         <div class="card mb-4 shadow-sm">
           <div class="card-body">
-            <h2 class="card-title h4 fw-semibold">Overview</h2>
+            <h2 class="card-title h4 fw-semibold text-green-500">Overview</h2>
             <p class="card-text">
               Base URL:
               <code>{{ request.scheme }}://{{ request.get_host }}/api/</code>
             </p>
             <p class="card-text">
-              The YSpotter API provides access to trips and routes created and user data.
+              The YSpotter API provides an interface to have overview about
+              the results of unit tests and integration tests. We currently use Pytest.
               Authentication is required for some endpoints (API key support
-              coming soon).
+              coming soon). Green for "Working", Orange for "In progress", Red for "In queue"
             </p>
-          </div>
-        </div>
-
-        <!-- Endpoints -->
-        <div class="accordion" id="endpointsAccordion">
-          <!-- GET /api/users/ -->
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button
-                class="accordion-button"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseItems"
-                aria-expanded="false"
-                aria-controls="collapseItems"
-              >
-                GET /api/users/
-              </button>
-            </h2>
-            <div
-              id="collapseItems"
-              class="accordion-collapse collapse show"
-              data-bs-parent="#endpointsAccordion"
-            >
-              <div class="accordion-body">
-                <p>Retrieve a list of all existing users.</p>
-                <div class="bg-light p-3 rounded">
-                  <code class="text-success">GET</code>
-                  {{ request.scheme }}://{{ request.get_host }}/api/users/
-                </div>
-                <h5 class="mt-3">Response</h5>
-<pre class="bg-light p-3 rounded">
-    [
-        {
-            "id": 1,
-            "username": "spotter",
-            "image": "url/to/image"
-        },
-        {
-            "id": 2,
-            "name": "yspotter",
-            "image": "url/to/image2"
-        },
-        {% for user in users %}
-        {
-            "id": {{ uer.id }},
-            "name": "{{ user.name }}",
-            "image": "{{ user.image|default:'url/to/image' }}"
-        }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ]
-</pre>
-              </div>
-            </div>
-          </div>
-
-          <!-- GET /api/users/:id/ -->
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button
-                class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseItemDetail"
-                aria-expanded="false"
-                aria-controls="collapseItemDetail"
-              >
-                GET /api/users/:id/
-              </button>
-            </h2>
-            <div
-              id="collapseItemDetail"
-              class="accordion-collapse collapse"
-              data-bs-parent="#endpointsAccordion"
-            >
-              <div class="accordion-body">
-                <p>Retrieve details of a specific user by ID.</p>
-                <div class="bg-light p-3 rounded">
-                  <code class="text-success">GET</code>
-                  {{ request.scheme }}://{{ request.get_host }}/api/user/1/
-                </div>
-                <h5 class="mt-3">Response</h5>
-                <pre class="bg-light p-3 rounded">
-{
-    "id": 1,
-    "name": "spotter",
-    "image": "url/to/image"
-}</pre
+            <ul>
+                <li>Manage user state <span
+                    class="badge bg-success ms-2"
+                  >
+                    {{ api_status }}
+                  </span></li>
+                <li>Handling trips inputs<span
+                class="badge bg-warning ms-2"
                 >
-              </div>
-            </div>
+                    {{ api_status }}
+                </span></li>
+                <li>Interact with routes<span
+                class="badge bg-danger ms-2"
+                >
+                    {{ api_status }}
+                </span></li>
+                <li>Export DailyLogs<span
+                class="badge bg-danger ms-2"
+                >
+                {{ api_status }}
+                </span></li>
+            </ul>
           </div>
         </div>
-
-        <!-- CTA -->
-        <div class="text-center mt-5">
-          <a class="btn btn-primary btn-lg shadow" href="/endpoints">
-            Explore All Endpoints <i class="bi bi-arrow-right ms-2"></i>
-          </a>
-        </div>
-      </section>
-    </div>
 
     <!-- Bootstrap JS -->
     <script

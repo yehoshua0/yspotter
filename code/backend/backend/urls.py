@@ -8,6 +8,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),
     path('', TemplateView.as_view(template_name="index.html")),
+    path('endpoints', TemplateView.as_view(template_name="endpoints.html")),
+    path('status', TemplateView.as_view(template_name="status.html")),
     path("api/user/register/", CreateUserView.as_view(), name="register"),
     path("api/token/", TokenObtainPairView.as_view(), name="get_token"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
