@@ -3,13 +3,13 @@ FROM python:3.11-slim-bookworm
 
 # Install system dependencies, including a newer GDAL
 RUN apt-get update && apt-get install -y \
-    libgdal \
+    libgdal-dev \
     gdal-bin \
     && apt-get clean
 
 # Set environment variables for GDAL
 ENV GDAL_VERSION=3.10.2
-RUN pip install --no-cache-dir GDAL==3.10.2
+RUN pip install --no-cache-dir GDAL==${GDAL_VERSION}
 
 # Set working directory
 WORKDIR /app
