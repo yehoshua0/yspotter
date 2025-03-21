@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import tt from '@tomtom-international/web-sdk-maps'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import pic from '../../assets/pic2.jpg'
 import pic2 from '../../assets/pic3.jpg'
-import LoadingIndicator from '../common/LoadingIndicator'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from './../../constants'
+import api from './../../api'
 
 function Home() {
-  const [trip, setTrip] = useState({}) // Default to trip
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const username = localStorage.getItem('user')
 
   const mapRef = useRef(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     console.log(loading)
@@ -78,16 +79,6 @@ function Home() {
     }
   }
 
-  const handleSeeDirection = () => {
-    console.log('See Direction for:', trip)
-    setTrip(trip)
-  }
-
-  //TODO: Toggle between satellite and vector view
-  const changeLayerView = () => {
-    alert('FUTURE VERSION: THIS FEATURE IS ALWAYS UNDER DEVELOPMENT')
-  }
-
   const handleNavLink = (todo) => {
     switch (todo) {
       case 'Direction':
@@ -121,6 +112,65 @@ function Home() {
       default:
         break
     }
+  }
+
+  const handleSeeDirection = async (e) => {
+    e.preventDefault()
+
+    // Get different values
+    const name = document.getElementById('name').value
+    const description = document.getElementById('description').value
+    const curr_location = document.getElementById('curr_location').value
+    const pick_location = document.getElementById('pick_location').value
+    const drop_location = document.getElementById('drop_location').value
+    const curr_cycle = document.getElementById('curr_cycle').value
+    console.log(
+      name,
+      description,
+      curr_location,
+      pick_location,
+      drop_location,
+      curr_cycle,
+      username,
+    )
+
+    // Print route using TOMTOM API
+
+    // Add your create trip logic here (e.g., API call)
+    try {
+      const res = await api.post('/api/trips/', {
+        name,
+        description,
+        current_location: curr_location, // Adjust keys to match API expectations
+        pickup_location: pick_location,
+        dropoff_location: drop_location,
+        current_cycle: curr_cycle,
+        username,
+      })
+
+      // Store tokens if returned by the API
+      if (res.data.access && res.data.refresh) {
+        localStorage.setItem(ACCESS_TOKEN, res.data.access)
+        localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
+      }
+
+      navigate('/') // Redirect to home
+    } catch (error) {
+      // Improved error handling
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        'An error occurred while creating the trip.'
+      alert(errorMessage) // Or use a toast library for better UX
+      console.error('Trip creation failed:', error)
+    } finally {
+      setLoading(false) // Reset loading state
+    }
+  }
+
+  //TODO: Toggle between satellite and vector view
+  const changeLayerView = () => {
+    alert('FUTURE VERSION: THIS FEATURE IS ALWAYS UNDER DEVELOPMENT')
   }
 
   return (
@@ -248,9 +298,35 @@ function Home() {
           <form className="bg-gray-100 p-4 rounded-2xl mb-6">
             <div className="mb-4">
               <label className="block text-sm font-bold text-gray-700 mb-1">
+                Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                defaultValue="Untitled trip"
+                className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Description
+              </label>
+              <input
+                id="description"
+                type="text"
+                defaultValue="Description of the trip"
+                maxLength={100}
+                className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
                 Current Location
               </label>
               <input
+                id="curr_location"
                 type="text"
                 defaultValue="Zabiniec 12/222, Sophi Nowakowska"
                 className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
@@ -262,6 +338,7 @@ function Home() {
                 Pickup Location
               </label>
               <input
+                id="pick_location"
                 type="text"
                 defaultValue="Restaurant, Zabiniec 12/222"
                 className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
@@ -273,6 +350,7 @@ function Home() {
                 Dropoff Location
               </label>
               <input
+                id="drop_location"
                 type="text"
                 defaultValue="Central Station, Krakow 15"
                 className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
@@ -285,21 +363,22 @@ function Home() {
               </label>
               <input
                 type="number"
+                id="curr_cycle"
                 defaultValue="1.5"
                 step="0.1"
                 className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
               />
             </div>
-          </form>
 
-          {/* Direction button */}
-          <button
-            type="submit"
-            onClick={handleSeeDirection}
-            className="bg-orange-600 w-full p-4 my-4 text-white text-center rounded-xl shadow-orange-600/60 shadow-lg cursor-pointer"
-          >
-            See Direction <i className="bi bi-arrow-right mx-3"></i>
-          </button>
+            {/* Direction button */}
+            <button
+              type="submit"
+              onClick={(e) => handleSeeDirection(e)}
+              className="bg-orange-600 w-full p-4 my-4 text-white text-center rounded-xl shadow-orange-600/60 shadow-lg cursor-pointer"
+            >
+              See Direction <i className="bi bi-arrow-right mx-3"></i>
+            </button>
+          </form>
         </section>
       </div>
     </div>
