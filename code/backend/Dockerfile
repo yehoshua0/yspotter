@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 
 # Set environment variables for GDAL
 ENV GDAL_VERSION=3.10.2
-RUN pip install --no-cache-dir GDAL==${GDAL_VERSION}
+RUN pip install --no-cache-dir GDAL==3.10.2
 
 # Set working directory
 WORKDIR /app
