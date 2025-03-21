@@ -21,3 +21,8 @@ Objective:
   - Property-carrying driver, 70hrs/8days, no adverse driving conditions
   - Fueling at least once every 1,000 miles
   - 1 hour for pickup and drop-off
+
+## Main challenges I had to overcome
+
+- Configure PostGIS after install Postgresql
+- Redeploy another project with now Dockerfile

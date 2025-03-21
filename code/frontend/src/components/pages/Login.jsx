@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import api from '../../api'
 import { useNavigate } from 'react-router-dom'
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants'
+import { ACCESS_TOKEN, REFRESH_TOKEN, USERNAME } from '../../constants'
 import LoadingIndicator from './../common/LoadingIndicator'
 
 const Login = () => {
@@ -18,6 +18,7 @@ const Login = () => {
       const res = await api.post('/api/token/', { username, password })
       localStorage.setItem(ACCESS_TOKEN, res.data.access)
       localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
+      localStorage.setItem(USERNAME, username)
       navigate('/')
     } catch (error) {
       alert(error)

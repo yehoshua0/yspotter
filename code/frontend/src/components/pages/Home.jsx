@@ -1,39 +1,22 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import tt from '@tomtom-international/web-sdk-maps'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import space from '../../assets/space.jpg'
-import pic from '../../assets/pic.jpg'
-import pic2 from '../../assets/pic2.jpg'
-import pic3 from '../../assets/pic3.jpg'
-import item from '../../assets/item.jpeg'
-import item2 from '../../assets/item2.jpeg'
-import item3 from '../../assets/item3.jpeg'
-import item4 from '../../assets/item4.jpeg'
-import item5 from '../../assets/item5.jpeg'
-import item6 from '../../assets/item6.jpeg'
-import item7 from '../../assets/item7.jpeg'
-
-// Sample items (replace with API data later)
-const sampleItems = [
-  { id: 1, img: item, name: 'Item 1' },
-  { id: 2, img: item2, name: 'Item 2' },
-  { id: 3, img: item3, name: 'Item 3' },
-  { id: 4, img: item4, name: 'Item 4' },
-  { id: 5, img: item5, name: 'Item 5' },
-  { id: 6, img: item6, name: 'Item 6' },
-  { id: 7, img: item7, name: 'Item 7' },
-]
+import pic from '../../assets/pic2.jpg'
+import pic2 from '../../assets/pic3.jpg'
+import LoadingIndicator from '../common/LoadingIndicator'
 
 function Home() {
   const [trip, setTrip] = useState({}) // Default to trip
-  const [users, setUsers] = useState(sampleItems) // Default to sample items
+  const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('ALL') // Tab state
+  const username = localStorage.getItem('user')
+
+  const mapRef = useRef(null)
 
   useEffect(() => {
-    // Fetch users from Django API
+    console.log(loading)
     axios
       .get(`${import.meta.env.VITE_API_URL}api/users/`)
       .then((response) => {
@@ -49,24 +32,95 @@ function Home() {
     const mapElement = document.getElementById('map')
     if (!mapElement) return
 
-    const map = tt.map({
-      key: `${import.meta.env.VITE_TOMTOM_API_KEY}`, // Your TomTom API Key
+    mapRef.current = tt.map({
+      key: import.meta.env.VITE_TOMTOM_API_KEY,
       container: 'map',
       center: [-74.006, 40.7128], // New York coordinates
-      zoom: 10,
+      zoom: 13,
     })
 
-    map.addControl(new tt.FullscreenControl())
-    map.addControl(new tt.NavigationControl())
+    // mapRef.current.addControl(new tt.FullscreenControl())
+    // mapRef.current.addControl(new tt.NavigationControl())
 
-    return () => map.remove() // Cleanup
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current = null
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleTabChange = (tab) => setActiveTab(tab)
+  const getCurrentPosition = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          console.log(latitude, longitude)
+
+          if (mapRef.current) {
+            mapRef.current.flyTo({
+              center: [longitude, latitude],
+              zoom: 10,
+            })
+
+            new tt.Marker()
+              .setLngLat([longitude, latitude])
+              .addTo(mapRef.current)
+          }
+        },
+        (error) => {
+          console.error('Error getting location:', error)
+        },
+      )
+    } else {
+      console.error('Geolocation is not supported by this browser.')
+    }
+  }
 
   const handleSeeDirection = () => {
     console.log('See Direction for:', trip)
     setTrip(trip)
+  }
+
+  //TODO: Toggle between satellite and vector view
+  const changeLayerView = () => {
+    alert('FUTURE VERSION: THIS FEATURE IS ALWAYS UNDER DEVELOPMENT')
+  }
+
+  const handleNavLink = (todo) => {
+    switch (todo) {
+      case 'Direction':
+        alert('Direction')
+        break
+      case 'Favourite':
+        alert('Favourite [IN DEVELOPMENT]')
+        break
+      case 'History':
+        alert('History [IN DEVELOPMENT]')
+        break
+      case 'Saved':
+        alert('Saved [IN DEVELOPMENT]')
+        break
+      default:
+        break
+    }
+  }
+
+  const handleNavAction = (todo) => {
+    switch (todo) {
+      case 'bell-fill':
+        alert('Notifications [IN DEVELOPMENT]')
+        break
+      case 'chat-left-dots-fill':
+        alert('Messages [IN DEVELOPMENT]')
+        break
+      case 'gear':
+        alert('Settings [IN DEVELOPMENT]')
+        break
+      default:
+        break
+    }
   }
 
   return (
@@ -80,13 +134,14 @@ function Home() {
               alt="User"
               className="w-10 h-10 rounded-full outline-1 outline-white p-0.5"
             />
-            <span className="ml-2.5">Esmeralda Ruby</span>
+            <span className="ml-2.5">{username}</span>
           </div>
           <ul className="flex space-x-6">
             {['Direction', 'Favourite', 'History', 'Saved'].map((action) => (
               <li
                 key={action}
                 className={`px-4 py-2 rounded-md cursor-pointer hover:bg-gray-700 ${action === 'Direction' ? 'bg-gray-600' : ''}`}
+                onClick={() => handleNavLink(action)}
               >
                 <i
                   className={`bi bi-${action.toLowerCase() === 'direction' ? 'geo-alt-fill' : action.toLowerCase() === 'favourite' ? 'heart-fill' : action.toLowerCase() === 'history' ? 'clock-history' : 'floppy-fill'}`}
@@ -99,6 +154,7 @@ function Home() {
         <ul className="flex bg-gray-600 rounded-md">
           {['bell-fill', 'chat-left-dots-fill', 'gear'].map((icon) => (
             <li
+              onClick={() => handleNavAction(icon)}
               key={icon}
               className="p-4 cursor-pointer hover:bg-gray-500 rounded-md"
             >
@@ -112,11 +168,12 @@ function Home() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-20 p-4 bg-white flex flex-col items-center justify-between border-r border-gray-300">
-          {[pic, pic2, pic3].map((src, idx) => (
-            <Link key={idx} to={`/profile/${idx + 1}`} className="my-6">
+          {users.map(({ idx, username }) => (
+            <Link key={idx} to={`/profile/${username}`} className="my-6">
               <img
-                src={src}
-                alt={`User ${idx + 1}`}
+                src={pic}
+                alt={`${username} profile picture`}
+                title={`${username}`}
                 className="w-10 h-10 rounded-full outline-1 outline-gray-300 p-0.5 hover:scale-110 transition-transform"
               />
             </Link>
@@ -133,17 +190,31 @@ function Home() {
           <div className="absolute top-4 left-4 z-10 bg-white p-4 rounded-xl shadow-lg">
             <p className="font-bold">Route Info</p>
             <ul className="mt-2 space-y-2">
-              <li>Distance: 4.4 km</li>
-              <li>Remaining: 2.4 km</li>
-              <li>Time: 40 min</li>
+              <li>
+                Distance: <span id="distance">---</span> km
+              </li>
+              <li>
+                Remaining: <span id="remaining">---</span> km
+              </li>
+              <li>
+                Time: <span id="time">---</span> min
+              </li>
             </ul>
           </div>
 
           <ul className="grid grid-rows-2 mr-10 gap-2">
-            <li className=" text-black items-center ml-4 py-1 px-2 font-extrabold text-2xl cursor-pointer absolute top-4 right-4 z-10 bg-white p-4 rounded-xl shadow-lg">
+            <li
+              onClick={changeLayerView}
+              title="Change layer view"
+              className=" text-black items-center ml-4 py-1 px-2 font-extrabold text-2xl cursor-pointer absolute top-4 right-4 z-10 bg-white p-4 rounded-xl shadow-lg"
+            >
               <i className="bi bi-map"></i>
             </li>
-            <li className="text-black items-center ml-4 py-1 px-2 font-extrabold text-2xl cursor-pointer absolute top-16 right-4 z-10 bg-white p-4 rounded-xl shadow-lg">
+            <li
+              onClick={getCurrentPosition}
+              title="Get current position"
+              className="text-black items-center ml-4 py-1 px-2 font-extrabold text-2xl cursor-pointer absolute top-16 right-4 z-10 bg-white p-4 rounded-xl shadow-lg"
+            >
               <i className="bi bi-crosshair"></i>
             </li>
           </ul>
@@ -151,75 +222,81 @@ function Home() {
 
         {/* Toolbar Section */}
         <section className="w-1/3 p-6 bg-white overflow-y-auto">
+          {/* Driver details */}
           <div className="mb-6">
-            <img
-              src={space}
-              alt="Area Overview"
-              className="w-full rounded-t-2xl shadow-md"
-            />
-            <div className="bg-gray-200 p-4 rounded-b-2xl">
+            <div className="bg-gray-200 p-4 rounded-2xl">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
                   <img
                     src={pic}
-                    alt="Restaurant"
+                    alt="Trip Icon"
                     className="w-10 h-10 rounded-full outline-1 outline-gray-300 p-0.5"
                   />
-                  <span className="ml-2 font-bold">Restaurant</span>
+                  <span className="ml-2 font-bold">Driver name</span>
                 </div>
                 <div className="flex space-x-4">
                   <span>
                     <i className="bi bi-alarm text-orange-600"></i> 10:00 AM
                   </span>
-                  <span>
-                    <i className="bi bi-star text-orange-600"></i> 4.8
-                  </span>
                 </div>
               </div>
-              <p className="text-gray-500 mt-1">
-                Sophi Nowakowska, Zabiniec 12/222
-              </p>
+              <p className="text-gray-500 mt-1">Driver main information</p>
             </div>
           </div>
 
-          {/* Tabs */}
-          <ul className="flex justify-around bg-gray-200 rounded-full p-2 mb-6 text-sm">
-            {['ALL', 'MENU', 'REVIEW'].map((tab) => (
-              <li
-                key={tab}
-                className={`px-4 py-2 rounded-full cursor-pointer ${activeTab === tab ? 'bg-white shadow' : 'hover:bg-gray-300'}`}
-                onClick={() => handleTabChange(tab)}
-              >
-                {tab}
-              </li>
-            ))}
-          </ul>
+          {/* Editable Trip Details Form */}
+          <form className="bg-gray-100 p-4 rounded-2xl mb-6">
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Current Location
+              </label>
+              <input
+                type="text"
+                defaultValue="Zabiniec 12/222, Sophi Nowakowska"
+                className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              />
+            </div>
 
-          {/* Items Grid */}
-          {loading ? (
-            <p className="text-center text-gray-500">Loading items...</p>
-          ) : (
-            <ul className="grid grid-cols-3 gap-4">
-              {users.map((user) => (
-                <li key={user.id}>
-                  <Link to={`/users/${user.id}`}>
-                    <img
-                      src={user.img}
-                      alt={user.name}
-                      className="w-full h-24 object-cover rounded-lg hover:scale-105 transition-transform"
-                    />
-                    <p className="text-center text-sm mt-1">{user.name}</p>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Pickup Location
+              </label>
+              <input
+                type="text"
+                defaultValue="Restaurant, Zabiniec 12/222"
+                className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Dropoff Location
+              </label>
+              <input
+                type="text"
+                defaultValue="Central Station, Krakow 15"
+                className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Current Cycle Used (Hrs)
+              </label>
+              <input
+                type="number"
+                defaultValue="1.5"
+                step="0.1"
+                className="text-sm text-gray-600 bg-white w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              />
+            </div>
+          </form>
 
           {/* Direction button */}
           <button
             type="submit"
             onClick={handleSeeDirection}
-            className="bg-orange-600 w-full p-4 my-8 text-white text-center rounded-xl shadow-orange-600/60 shadow-lg cursor-pointer"
+            className="bg-orange-600 w-full p-4 my-4 text-white text-center rounded-xl shadow-orange-600/60 shadow-lg cursor-pointer"
           >
             See Direction <i className="bi bi-arrow-right mx-3"></i>
           </button>
