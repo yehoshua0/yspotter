@@ -12,9 +12,6 @@ class UserSerializer(serializers.ModelSerializer):
         print(validated_data)
         user = User.objects.create_user(**validated_data)
         return user
-    
-from rest_framework import serializers
-from .models import Trip, Route
 
 class TripSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(read_only=True)  # Display author ID only
@@ -63,6 +60,15 @@ class TripSerializer(serializers.ModelSerializer):
             else:
                 representation[field] = None
         return representation
+    
+    def create(self, validated_data):
+        try:
+            print("Validated Data:", validated_data)  # Debugging
+            trip = Trip.objects.create(**validated_data)
+            return trip
+        except Exception as e:
+            print("Error in Trip Creation:", str(e))  # Print the error
+            raise serializers.ValidationError({"detail": str(e)})
 
 class RouteSerializer(serializers.ModelSerializer):
     trip = serializers.PrimaryKeyRelatedField(queryset=Trip.objects.all())  # Link to Trip
@@ -113,6 +119,15 @@ class RouteSerializer(serializers.ModelSerializer):
         else:
             representation['route_path'] = None
         return representation
+    
+    def create(self, validated_data):
+        try:
+            print("Validated Data:", validated_data)  # Debugging
+            route = Route.objects.create(**validated_data)
+            return route
+        except Exception as e:
+            print("Error in Route Creation:", str(e))  # Print the error
+            raise serializers.ValidationError({"detail": str(e)})
 
 class DailyLogSerializer(serializers.ModelSerializer):
     route = serializers.PrimaryKeyRelatedField(queryset=Route.objects.all())
@@ -154,3 +169,12 @@ class DailyLogSerializer(serializers.ModelSerializer):
         if not data.get('route'):
             raise serializers.ValidationError({"route": "Route is required."})
         return data
+    
+    def create(self, validated_data):
+        try:
+            print("Validated Data:", validated_data)  # Debugging
+            log = DailyLog.objects.create(**validated_data)
+            return log
+        except Exception as e:
+            print("Error in DailyLog Creation:", str(e))  # Print the error
+            raise serializers.ValidationError({"detail": str(e)})
