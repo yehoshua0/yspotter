@@ -179,4 +179,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
 
-GDAL_LIBRARY_PATH = os.path.join(os.environ["CONDA_PREFIX"], "Library", "bin", "gdal.dll")  # Adjust the version!
+# GDAL_LIBRARY_PATH = os.path.join(os.environ["CONDA_PREFIX"], "Library", "bin", "gdal301.dll")  # Adjust the version!
+GDAL_LIBRARY_PATH = "C:\OSGeo4W\bin\gdal302.dll"  # Adjust the version!
